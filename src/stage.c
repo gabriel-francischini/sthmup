@@ -56,7 +56,7 @@ void do_debris(stage *s);
 
 stage *init_stage(SDL_Renderer *r)
 {
-	stage *s = calloc(1, sizeof(stage));
+	stage *s = (stage*) calloc(1, sizeof(stage));
 	s->fighter_tail = &s->fighter_head;
 	s->bullet_tail = &s->bullet_head;
 	s->score = 0;
@@ -194,7 +194,7 @@ static void add_explosions(int x, int y, int num, stage *s)
 	explosion *ex;
 	int i;
 	for(i = 0; i < num; i++) {
-		ex = calloc(1, sizeof(explosion));
+		ex = (explosion*) calloc(1, sizeof(explosion));
 		s->explosion_tail->next = ex;
 		s->explosion_tail = ex;
 
@@ -238,7 +238,7 @@ static void add_debris(entity *e, stage *s)
 
 	for(y = 0; y <= h; y += h) {
 		for(x = 0; x <= w; x += w) {
-			d = calloc(1, sizeof(debris));
+			d = (debris*) calloc(1, sizeof(debris));
 			s->debris_tail->next = d;
 			s->debris_tail = d;
 			

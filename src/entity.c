@@ -2,7 +2,7 @@
 
 entity *create_entity(int x, int y, int side, SDL_Texture *texture)
 {
-    entity *e = calloc(1, sizeof(entity));
+    entity *e = (entity*) calloc(1, sizeof(entity));
     e->x = x;
     e->y = y;
     e->side = side;

@@ -24,7 +24,7 @@ game *init_game()
 		exit(1);
 	}
 
-	game *g = malloc(sizeof(game));
+	game *g = (game*) malloc(sizeof(game));
 	g->is_running = 1;
 	memset(g->keyboard, 0, sizeof g->keyboard);
 	g->window = SDL_CreateWindow("Shooter 01", 0, 0, 1280, 720, 0);
