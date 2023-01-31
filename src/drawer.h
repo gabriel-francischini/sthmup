@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "stage.h"
+#include "stage/stage.h"
 
 //void draw(stage *s, SDL_Renderer *r, entity *player);
 

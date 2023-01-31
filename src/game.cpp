@@ -5,7 +5,7 @@
 
 #include "game.h"
 #include "entity.h"
-#include "stage.h"
+#include "stage/stage.h"
 #include "channels.h"
 #include "sounds.h"
 

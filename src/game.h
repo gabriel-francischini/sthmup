@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include "entity.h"
-#include "stage.h"
+#include "stage/stage.h"
 
 #define MAX_KEYBOARD_KEYS 350
 
