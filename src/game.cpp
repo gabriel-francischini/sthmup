@@ -13,9 +13,6 @@
 #define PLAYER_BULLET_SPEED 16
 #define CODE event->keysym.scancode
 
-static void doKeyDown(SDL_KeyboardEvent *event, game *g);
-static void doKeyUp(SDL_KeyboardEvent *event, game *g);
-
 game *game::init_game()
 {
 	
@@ -49,10 +46,10 @@ void game::handle_input()
 				g->is_running = 0;
 				break;
 			case SDL_KEYDOWN:
-				doKeyDown(&event.key, g);
+				g->doKeyDown(&event.key);
 				break;
 			case SDL_KEYUP:
-				doKeyUp(&event.key, g);
+				g->doKeyUp(&event.key);
 			default:
 				break;
 		}
@@ -87,14 +84,16 @@ void game::cleanup()
 
 
 
-static void doKeyDown(SDL_KeyboardEvent *event, game *g)
+void game::doKeyDown(SDL_KeyboardEvent *event)
 {
+	game *g = this;
 	if (event->repeat == 0 && CODE < MAX_KEYBOARD_KEYS)
 		g->keyboard[CODE] = 1;
 	
 }
-static void doKeyUp(SDL_KeyboardEvent *event, game *g)
+void game::doKeyUp(SDL_KeyboardEvent *event)
 {
+	game *g = this;
 	if (event->repeat == 0 && CODE < MAX_KEYBOARD_KEYS)
 		g->keyboard[CODE] = 0;
 }
