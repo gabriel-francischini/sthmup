@@ -1,15 +1,15 @@
-CC = gcc
-CFLAGS = -Wall -Wextra -g -O0
+CC = g++
+CFLAGS = -Wall -Wextra -g -O0 -fpermissive -Wno-write-strings
 SRC=src
 OBJ=obj
-SRCS=$(wildcard $(SRC)/*.c)
-OBJS=$(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(SRCS))
+SRCS=$(wildcard $(SRC)/*.c*)
+OBJS=$(patsubst $(SRC)/%.c*, $(OBJ)/%.o, $(SRCS))
 LINKER_FLAGS = -lSDL2 -lSDL2_image
 BIN = bin/shtmup
 
 all:$(BIN)
 
-release: CFLAGS=-Wall -O3 -DNDEBUG
+release: CFLAGS=-Wall -O3 -DNDEBUG -fpermissive -Wno-write-strings
 release: clean
 release: $(BIN)
 

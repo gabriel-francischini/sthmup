@@ -34,7 +34,7 @@ static int collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int
 static int bullet_hit_fighter(entity *b, stage *s);
 static void calc_slope(int x1, int y1, int x2, int y2, float *dx, float *dy);
 static void reset_stage(stage *s);
-static void init_starfield();
+static void init_starfield(stage *s);
 static void do_background();
 static void do_starfield(stage *s);
 static void do_explosions(stage *s);
