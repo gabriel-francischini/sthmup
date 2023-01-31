@@ -16,7 +16,7 @@
 static void doKeyDown(SDL_KeyboardEvent *event, game *g);
 static void doKeyUp(SDL_KeyboardEvent *event, game *g);
 
-game *init_game()
+game *game::init_game()
 {
 	
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -38,8 +38,9 @@ game *init_game()
 	return g;
 }
 
-void handle_input(game *g)
+void game::handle_input()
 {
+	game *g = this;
 	SDL_Event event;
 	
 	while (SDL_PollEvent(&event)) {
@@ -59,21 +60,25 @@ void handle_input(game *g)
 		
 }
 
-void update(game *g)
+void game::update()
 {
+	game *g = this;
 	do_logic(g->keyboard, g->s);
 }
 
-void render(game *g)
+void game::render()
 {
+	game *g = this;
 	SDL_RenderClear(g->renderer);
 	draw(g->s, g->renderer);
 	SDL_RenderPresent(g->renderer);
 }
 
-void cleanup(game *g)
+void game::cleanup()
 {
+	game *g = this;
 	SDL_DestroyRenderer(g->renderer);
+
 	
 	SDL_DestroyWindow(g->window);
 	

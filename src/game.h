@@ -7,18 +7,18 @@
 
 #define MAX_KEYBOARD_KEYS 350
 
-typedef struct game {
+struct game {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 	stage *s;
 	int is_running;
 	int keyboard[MAX_KEYBOARD_KEYS];
-} game ;
 
-game *init_game();
-void handle_input(game *g);
-void update(game *g);
-void render(game *g);
-void cleanup(game *g);
+	static game *init_game();
+	void handle_input();
+	void update();
+	void render();
+	void cleanup();
+};
 
 #endif
