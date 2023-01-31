@@ -9,7 +9,7 @@
 
 #define MAX_STARS 500
 
-typedef struct stage {
+struct stage {
     entity fighter_head, *fighter_tail;
     entity bullet_head, *bullet_tail;
 
@@ -17,9 +17,10 @@ typedef struct stage {
     debris debris_head, *debris_tail;
     star stars[MAX_STARS];
     int score;
-} stage;
 
-stage *init_stage(SDL_Renderer *renderer);
-void do_logic(int *keyboard, stage *s);
-void draw(stage *s, SDL_Renderer *r);
+    static stage *init_stage(SDL_Renderer *renderer);
+    void do_logic(int *keyboard);
+    void draw(SDL_Renderer *r);
+};
+
 #endif

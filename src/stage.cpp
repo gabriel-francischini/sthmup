@@ -54,7 +54,7 @@ void do_debris(stage *s);
 
 //static void draw();
 
-stage *init_stage(SDL_Renderer *r)
+stage *stage::init_stage(SDL_Renderer *r)
 {
 	stage *s = (stage*) calloc(1, sizeof(stage));
 	s->fighter_tail = &s->fighter_head;
@@ -132,8 +132,9 @@ static void init_starfield(stage *s)
 	}
 }
 
-void do_logic(int *keyboard, stage *s)
+void stage::do_logic(int *keyboard)
 {
+	stage *s = this;
 	do_background();
 	do_starfield(s);
 	do_player(s, keyboard);
@@ -482,8 +483,9 @@ void do_debris(stage *s) {
 	}
 }
 
-void draw(stage *s, SDL_Renderer *r)
+void stage::draw(SDL_Renderer *r)
 {
+	stage *s = this;
 	draw_background(r);
 	draw_starfield(s, r);
 

@@ -29,7 +29,7 @@ game *game::init_game()
 	memset(g->keyboard, 0, sizeof g->keyboard);
 	g->window = SDL_CreateWindow("Shooter 01", 0, 0, 1280, 720, 0);
 	g->renderer = SDL_CreateRenderer(g->window, -1, SDL_RENDERER_ACCELERATED);
-	g->s = init_stage(g->renderer);
+	g->s = stage::init_stage(g->renderer);
 
 	SDL_SetRenderDrawColor(g->renderer, 96, 128, 255, 255);
 	
@@ -63,14 +63,14 @@ void game::handle_input()
 void game::update()
 {
 	game *g = this;
-	do_logic(g->keyboard, g->s);
+	g->s->do_logic(g->keyboard);
 }
 
 void game::render()
 {
 	game *g = this;
 	SDL_RenderClear(g->renderer);
-	draw(g->s, g->renderer);
+	g->s->draw(g->renderer);
 	SDL_RenderPresent(g->renderer);
 }
 
