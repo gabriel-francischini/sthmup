@@ -2,8 +2,8 @@ CC = g++
 CFLAGS = -Wall -Wextra -g -O0 -fpermissive -Wno-write-strings
 SRC=src
 OBJ=obj
-SRCS=$(wildcard $(SRC)/*.c*)
-OBJS=$(patsubst $(SRC)/%.c*, $(OBJ)/%.o, $(SRCS))
+SRCS=$(wildcard $(SRC)/*.cpp)
+OBJS=$(patsubst $(SRC)/%.cpp, $(OBJ)/%.o, $(SRCS))
 LINKER_FLAGS = -lSDL2 -lSDL2_image
 BIN = bin/shtmup
 
@@ -17,7 +17,7 @@ $(BIN): $(OBJS)
 	@mkdir -p bin
 	$(CC) $(CFLAGS) $(OBJS) $(LINKER_FLAGS) -o $@
 
-$(OBJ)/%.o: $(SRC)/%.c
+$(OBJ)/%.o: $(SRC)/%.cpp
 	@mkdir -p obj
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -28,4 +28,4 @@ clean:
 	rm -rf bin obj
 
 tags: $(BIN)
-	find $(SRC)/ -type f -iname "*.[chS]" | xargs etags -a
+	find $(SRC)/ -type f -iname "*.[chSp]*" | xargs etags -a
