@@ -23,4 +23,13 @@ struct stage {
     void draw(SDL_Renderer *r);
 };
 
+
+// These were previosuly drawer.c methods
+void draw_explosions(stage *s, SDL_Renderer *r);
+void draw_debris(stage *s, SDL_Renderer *r);
+void draw_starfield(stage *s, SDL_Renderer *r);
+void draw_hud(stage *s, entity *player, SDL_Renderer *renderer);
+
+
+
 #endif
