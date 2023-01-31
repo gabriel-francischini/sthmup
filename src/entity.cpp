@@ -1,6 +1,6 @@
 #include "entity.h"
 
-entity *create_entity(int x, int y, int side, SDL_Texture *texture)
+entity *entity::create_entity(int x, int y, int side, SDL_Texture *texture)
 {
     entity *e = (entity*) calloc(1, sizeof(entity));
     e->x = x;

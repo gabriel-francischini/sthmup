@@ -114,7 +114,7 @@ static void reset_stage(stage *s)
 
 static void init_player(stage *s)
 {
-	player = create_entity(100, 100, SIDE_PLAYER, player_texture);
+	player = entity::create_entity(100, 100, SIDE_PLAYER, player_texture);
 	player->dx = 0;
 	player->dy = 0;
 	player->health = 3;
@@ -296,7 +296,7 @@ static void do_player(stage *s, int *keyboard)
 
 static void fire_bullet(stage *s)
 {
-	entity *bullet = create_entity(player->x, player->y, SIDE_PLAYER, bullet_texture);
+	entity *bullet = entity::create_entity(player->x, player->y, SIDE_PLAYER, bullet_texture);
 	
 	s->bullet_tail->next = bullet;
 	s->bullet_tail = bullet;
@@ -319,7 +319,7 @@ static void do_enemies(stage *s)
 
 static void fire_alien_bullet(entity *e, stage *s)
 {
-	entity *bullet = create_entity(e->x, e->y, e->side, alien_bullet_texture);
+	entity *bullet = entity::create_entity(e->x, e->y, e->side, alien_bullet_texture);
 	s->bullet_tail->next = bullet;
 	s->bullet_tail = bullet;
 
@@ -370,7 +370,7 @@ static void spawn_enemies(stage *s)
 	entity *enemy;
 	
 	if (--spawn_timer <= 0) {
-		enemy = create_entity(SCREEN_WIDTH, rand() % SCREEN_HEIGHT, SIDE_ALIEN, enemy_texture);
+		enemy = entity::create_entity(SCREEN_WIDTH, rand() % SCREEN_HEIGHT, SIDE_ALIEN, enemy_texture);
 		enemy->dx = -(2 + (rand() % 4));
 		enemy->reload = FPS * (1 + (rand() % 3));
 		spawn_timer = 30 + (rand() % FPS);

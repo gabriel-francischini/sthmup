@@ -17,8 +17,9 @@ struct entity {
     int side;
     SDL_Texture *texture;
     entity *next;
+
+    static entity *create_entity(int x, int y, int side, SDL_Texture *texture);
 };
 
-entity *create_entity(int x, int y, int side, SDL_Texture *texture);
 
 #endif
