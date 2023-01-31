@@ -23,8 +23,9 @@ void init_draw(SDL_Renderer *r)
 	font_texture = load_texture("gfx/font.png", r);
 }
 
-void draw_explosions(stage *s, SDL_Renderer *r)
+void stage::draw_explosions(SDL_Renderer *r)
 {
+	stage *s = this;
 	explosion *ex;
 
 	SDL_SetRenderDrawBlendMode(r, SDL_BLENDMODE_ADD);
@@ -41,8 +42,9 @@ void draw_explosions(stage *s, SDL_Renderer *r)
 }
 
 
-void draw_debris(stage *s, SDL_Renderer *r)
+void stage::draw_debris(SDL_Renderer *r)
 {
+	stage *s = this;
 	debris *d;
 
 	for (d = s->debris_head.next ; d != NULL ; d = d->next)
@@ -50,8 +52,9 @@ void draw_debris(stage *s, SDL_Renderer *r)
 }
 
 
-void draw_starfield(stage *s, SDL_Renderer *r)
+void stage::draw_starfield(SDL_Renderer *r)
 {
+	stage *s = this;
 	int i, c;
 
 	for (i = 0 ; i < MAX_STARS ; i++) {
@@ -64,8 +67,9 @@ void draw_starfield(stage *s, SDL_Renderer *r)
 }
 
 
-void draw_hud(stage *s, entity *player, SDL_Renderer *renderer)
+void stage::draw_hud(entity *player, SDL_Renderer *renderer)
 {
+	stage *s = this;
 	draw_text(1080, 10, 255, 255, 255, renderer, "SCORE: %03d", s->score);
 	if(player != NULL) {
 		draw_text(1080, 50, 255, 255, 255, renderer, "HEALTH: %d", player->health);

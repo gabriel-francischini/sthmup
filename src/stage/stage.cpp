@@ -486,7 +486,7 @@ void stage::draw(SDL_Renderer *r)
 {
 	stage *s = this;
 	draw_background(r);
-	draw_starfield(s, r);
+	s->draw_starfield(r);
 
 	if(player != NULL)
 		blit(player->texture, player->x, player->y, r);
@@ -501,7 +501,7 @@ void stage::draw(SDL_Renderer *r)
 	for (e = s->fighter_head.next; e != NULL ; e = e->next)
 		blit(e->texture, e->x, e->y, r);
 	
-	draw_debris(s, r);
-	draw_explosions(s, r);
-	draw_hud(s, player, r);
+	s->draw_debris(r);
+	s->draw_explosions(r);
+	s->draw_hud(player, r);
 }

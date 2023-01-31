@@ -38,15 +38,13 @@ private:
     void do_starfield();
     void do_explosions();
     void do_debris();
+
+    // These were previously drawer.c methods
+    void draw_explosions(SDL_Renderer *r);
+    void draw_debris(SDL_Renderer *r);
+    void draw_starfield(SDL_Renderer *r);
+    void draw_hud(entity *player, SDL_Renderer *renderer);
 };
-
-
-// These were previosuly drawer.c methods
-void draw_explosions(stage *s, SDL_Renderer *r);
-void draw_debris(stage *s, SDL_Renderer *r);
-void draw_starfield(stage *s, SDL_Renderer *r);
-void draw_hud(stage *s, entity *player, SDL_Renderer *renderer);
-
 
 
 #endif
