@@ -26,3 +26,6 @@ run:
 
 clean:
 	rm -rf bin obj
+
+tags: $(BIN)
+	find $(SRC)/ -type f -iname "*.[chS]" | xargs etags -a
