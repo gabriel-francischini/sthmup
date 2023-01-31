@@ -21,6 +21,23 @@ struct stage {
     static stage *init_stage(SDL_Renderer *renderer);
     void do_logic(int *keyboard);
     void draw(SDL_Renderer *r);
+
+    void add_debris(entity *e);
+    void add_explosions(int x, int y, int num);
+private:
+    void init_player();
+    void fire_bullet();
+    void fire_alien_bullet(entity *e);
+    void do_player(int *keyboard);
+    void do_bullets();
+    void do_enemies();
+    void do_fighters();
+    void spawn_enemies();
+    void reset_stage();
+    void init_starfield();
+    void do_starfield();
+    void do_explosions();
+    void do_debris();
 };
 
 

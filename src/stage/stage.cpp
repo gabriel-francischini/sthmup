@@ -21,26 +21,12 @@
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
-static void init_player(stage *s);
-static void fire_bullet(stage *s);
-static void fire_alien_bullet(entity *e, stage *s);
-static void do_player(stage *s, int *keyboard);
-static void do_bullets(stage *s);
-static void do_enemies(stage *s);
-static void do_fighters(stage *s);
 static void clip_player();
-static void spawn_enemies(stage *s);
 static int collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 static int bullet_hit_fighter(entity *b, stage *s);
 static void calc_slope(int x1, int y1, int x2, int y2, float *dx, float *dy);
-static void reset_stage(stage *s);
-static void init_starfield(stage *s);
 static void do_background();
-static void do_starfield(stage *s);
-static void do_explosions(stage *s);
 
-static void add_debris(entity *e, stage *s);
-static void add_explosions(int x, int y, int num, stage *s);
 
 static entity *player;
 
@@ -49,8 +35,6 @@ static int reset_timer;
 
 //DEFINING GLOBAL from GLOBALS.H
 int background_x;
-
-void do_debris(stage *s);
 
 //static void draw();
 
@@ -63,13 +47,14 @@ stage *stage::init_stage(SDL_Renderer *r)
 
 	init_draw(r);
 	
-	reset_stage(s);
+	s->reset_stage();
 
 	return s;
 }
 
-static void reset_stage(stage *s)
+void stage::reset_stage()
 {
+	stage *s = this;
 	entity *e;
 	explosion *ex;
 	debris *d;
@@ -104,16 +89,17 @@ static void reset_stage(stage *s)
 	s->explosion_tail = &s->explosion_head;
 	s->debris_tail = &s->debris_head;
 
-	init_player(s);
-	init_starfield(s);
+	s->init_player();
+	s->init_starfield();
 
 	spawn_timer = 0;
 	reset_timer = FPS * 3;
 	s->score = 0;
 }
 
-static void init_player(stage *s)
+void stage::init_player()
 {
+	stage *s = this;
 	player = entity::create_entity(100, 100, SIDE_PLAYER, player_texture);
 	player->dx = 0;
 	player->dy = 0;
@@ -122,8 +108,9 @@ static void init_player(stage *s)
 	s->fighter_tail = player;
 }
 
-static void init_starfield(stage *s)
+void stage::init_starfield()
 {
+	stage *s = this;
 	int i;
 	for(i = 0; i < MAX_STARS; i++) {
 		s->stars[i].x = rand() % SCREEN_WIDTH;
@@ -136,18 +123,18 @@ void stage::do_logic(int *keyboard)
 {
 	stage *s = this;
 	do_background();
-	do_starfield(s);
-	do_player(s, keyboard);
-	do_enemies(s);
-	do_fighters(s);
-	do_bullets(s);
-	spawn_enemies(s);
+	s->do_starfield();
+	s->do_player(keyboard);
+	s->do_enemies();
+	s->do_fighters();
+	s->do_bullets();
+	s->spawn_enemies();
 	clip_player();
-	do_explosions(s);
-	do_debris(s);
+	s->do_explosions();
+	s->do_debris();
 
 	if(player == NULL && --reset_timer <= 0)
-		reset_stage(s);
+		s->reset_stage();
 }
 
 
@@ -157,8 +144,9 @@ static void do_background()
 		background_x = 0;
 }
 
-static void do_starfield(stage *s)
+void stage::do_starfield()
 {
+	stage *s = this;
 	int i;
 
 	for(i = 0; i < MAX_STARS; i++) {
@@ -169,8 +157,9 @@ static void do_starfield(stage *s)
 	}
 }
 
-static void do_explosions(stage *s)
+void stage::do_explosions()
 {
+	stage *s = this;
 	explosion *e;
 	explosion *prev = &s->explosion_head;
 
@@ -190,8 +179,9 @@ static void do_explosions(stage *s)
 	}
 }
 
-static void add_explosions(int x, int y, int num, stage *s)
+void stage::add_explosions(int x, int y, int num)
 {
+	stage *s = this;
 	explosion *ex;
 	int i;
 	for(i = 0; i < num; i++) {
@@ -229,8 +219,9 @@ static void add_explosions(int x, int y, int num, stage *s)
 	}
 }
 
-static void add_debris(entity *e, stage *s)
+void stage::add_debris(entity *e)
 {
+	stage *s = this;
 	debris *d;
 	int x, y, w, h;
 
@@ -264,8 +255,9 @@ static void add_debris(entity *e, stage *s)
 	}
 }
 
-static void do_player(stage *s, int *keyboard)
+void stage::do_player(int *keyboard)
 {
+	stage *s = this;
 	if(player != NULL) {
 	
 		player->dx = 0;
@@ -287,15 +279,16 @@ static void do_player(stage *s, int *keyboard)
 			player->dx = PLAYER_SPEED;
 		
 		if (keyboard[SDL_SCANCODE_RCTRL] && player->reload <= 0)
-			fire_bullet(s);
+			s->fire_bullet();
 		
 		player->x += player->dx;
 		player->y += player->dy;
 	}
 }
 
-static void fire_bullet(stage *s)
+void stage::fire_bullet()
 {
+	stage *s = this;
 	entity *bullet = entity::create_entity(player->x, player->y, SIDE_PLAYER, bullet_texture);
 	
 	s->bullet_tail->next = bullet;
@@ -308,17 +301,19 @@ static void fire_bullet(stage *s)
 	player->reload = 8;
 }
 
-static void do_enemies(stage *s)
+void stage::do_enemies()
 {
+	stage *s = this;
 	entity *e;
 	for(e = s->fighter_head.next; e != NULL; e = e->next) {
 		if(e != player && player != NULL && --e->reload <= 0)
-			fire_alien_bullet(e, s);
+			s->fire_alien_bullet(e);
 	}
 }
 
-static void fire_alien_bullet(entity *e, stage *s)
+void stage::fire_alien_bullet(entity *e)
 {
+	stage *s = this;
 	entity *bullet = entity::create_entity(e->x, e->y, e->side, alien_bullet_texture);
 	s->bullet_tail->next = bullet;
 	s->bullet_tail = bullet;
@@ -336,8 +331,9 @@ static void fire_alien_bullet(entity *e, stage *s)
 	e->reload = (rand() % FPS * 2);
 }
 
-static void do_fighters(stage *s)
+void stage::do_fighters()
 {
+	stage *s = this;
 	entity *e;
 	entity *prev = &s->fighter_head;
 
@@ -365,8 +361,9 @@ static void do_fighters(stage *s)
 	}
 }
 
-static void spawn_enemies(stage *s)
+void stage::spawn_enemies()
 {
+	stage *s = this;
 	entity *enemy;
 	
 	if (--spawn_timer <= 0) {
@@ -398,8 +395,9 @@ static void clip_player()
 	}
 }
 
-static void do_bullets(stage *s)
+void stage::do_bullets()
 {
+	stage *s = this;
 	entity *b;
 	entity *prev = &s->bullet_head;
 		
@@ -434,8 +432,8 @@ static int bullet_hit_fighter(entity *b, stage *s)
 			e->health--;
 
 			if(e->health == 0) {
-				add_explosions(e->x, e->y, 32, s);
-				add_debris(e, s);
+				s->add_explosions(e->x, e->y, 32);
+				s->add_debris(e);
 				if(e != player)
 					s->score++;
 			}
@@ -463,7 +461,8 @@ void calc_slope(int x1, int y1, int x2, int y2, float *dx, float *dy)
 	*dy /= steps;
 }
 
-void do_debris(stage *s) {
+void stage::do_debris() {
+	stage *s = this;
 	debris *d;
 	debris *prev = &s->debris_head;
 
