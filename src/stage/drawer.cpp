@@ -42,16 +42,6 @@ void stage::draw_explosions(SDL_Renderer *r)
 }
 
 
-void stage::draw_debris(SDL_Renderer *r)
-{
-	stage *s = this;
-	debris *d;
-
-	for (d = s->debris_head.next ; d != NULL ; d = d->next)
-		blit_rect(d->texture, &d->rect, d->x, d->y, r);
-}
-
-
 void stage::draw_starfield(SDL_Renderer *r)
 {
 	stage *s = this;

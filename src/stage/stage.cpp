@@ -12,11 +12,9 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
-#define FPS 60
 #define PLAYER_SPEED 4
 #define PLAYER_BULLET_SPEED 16
 #define ALIEN_BULLET_SPEED 8
-#define SIDE_PLAYER 0
 #define SIDE_ALIEN 1
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
@@ -77,9 +75,9 @@ void stage::reset_stage()
 		free(ex);
 	}
 
-	while(s->debris_head.next) {
-		d = s->debris_head.next;
-		s->debris_head.next = d->next;
+	while(debris::debris_head.next) {
+		d = debris::debris_head.next;
+		debris::debris_head.next = d->next;
 		free(d);
 	}
 
@@ -87,7 +85,7 @@ void stage::reset_stage()
 	s->fighter_tail = &s->fighter_head;
 	s->bullet_tail = &s->bullet_head;
 	s->explosion_tail = &s->explosion_head;
-	s->debris_tail = &s->debris_head;
+	debris::debris_tail = &debris::debris_head;
 
 	s->init_player();
 	s->init_starfield();
@@ -131,7 +129,7 @@ void stage::do_logic(int *keyboard)
 	s->spawn_enemies();
 	clip_player();
 	s->do_explosions();
-	s->do_debris();
+	debris::do_debris();
 
 	if(player == NULL && --reset_timer <= 0)
 		s->reset_stage();
@@ -216,42 +214,6 @@ void stage::add_explosions(int x, int y, int num)
 				break;
 		}
 		ex->a = rand() % FPS * 3;
-	}
-}
-
-void stage::add_debris(entity *e)
-{
-	stage *s = this;
-	debris *d;
-	int x, y, w, h;
-
-	w = e->w / 2;
-	h = e->h / 2;
-
-	for(y = 0; y <= h; y += h) {
-		for(x = 0; x <= w; x += w) {
-			d = (debris*) calloc(1, sizeof(debris));
-			s->debris_tail->next = d;
-			s->debris_tail = d;
-			
-			d->x = e->x + e->w / 2;
-			d->y = e->y + e->h / 2;
-
-			if(e->side == SIDE_PLAYER) 
-				d->dx = (rand() % 9);
-			else
-				d->dx = -(rand() % 9);
-
-			d->dy = rand() % 3 + (-2) + 1;
-
-			d->life = FPS * 2;
-			d->texture = e->texture;
-			
-			d->rect.x = x;
-			d->rect.y = y;
-			d->rect.w = w;
-			d->rect.h = h;
-		}
 	}
 }
 
@@ -433,7 +395,7 @@ static int bullet_hit_fighter(entity *b, stage *s)
 
 			if(e->health == 0) {
 				s->add_explosions(e->x, e->y, 32);
-				s->add_debris(e);
+				debris::add_debris(e);
 				if(e != player)
 					s->score++;
 			}
@@ -461,27 +423,6 @@ void calc_slope(int x1, int y1, int x2, int y2, float *dx, float *dy)
 	*dy /= steps;
 }
 
-void stage::do_debris() {
-	stage *s = this;
-	debris *d;
-	debris *prev = &s->debris_head;
-
-	for (d = s->debris_head.next ; d != NULL ; d = d->next) {
-		d->x += d->dx;
-		d->y += d->dy;
-		
-		if (--d->life <= 0) {
-			if (d == s->debris_tail)
-				s->debris_tail = prev;
-			
-			prev->next = d->next;
-			free(d);
-			d = prev;
-		}
-		prev = d;
-	}
-}
-
 void stage::draw(SDL_Renderer *r)
 {
 	stage *s = this;
@@ -501,7 +442,7 @@ void stage::draw(SDL_Renderer *r)
 	for (e = s->fighter_head.next; e != NULL ; e = e->next)
 		blit(e->texture, e->x, e->y, r);
 	
-	s->draw_debris(r);
+	debris::draw_debris(r);
 	s->draw_explosions(r);
 	s->draw_hud(player, r);
 }

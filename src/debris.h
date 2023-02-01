@@ -2,8 +2,9 @@
 #define __DEBRIS__
 
 #include <SDL2/SDL.h>
+struct stage;
+struct entity;
 
-typedef struct debris debris;
 
 struct debris {
     float x;
@@ -14,6 +15,12 @@ struct debris {
     SDL_Texture *texture;
     int life;
     debris *next;
+
+    static debris debris_head, *debris_tail;
+
+    static void add_debris(entity *e);
+    static void do_debris();
+    static void draw_debris(SDL_Renderer *r);
 };
 
 #endif
