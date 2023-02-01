@@ -70,5 +70,5 @@ void debris::draw_debris(SDL_Renderer *r)
 	debris *d;
 
 	for (d = debris::debris_head.next ; d != NULL ; d = d->next)
-		blit_rect(d->texture, &d->rect, d->x, d->y, r);
+		drawer::blit_rect(d->texture, &d->rect, d->x, d->y, r);
 }

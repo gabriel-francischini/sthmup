@@ -8,7 +8,7 @@
 
 static char draw_text_buffer[MAX_LINE_LENGTH];
 
-void draw_background(SDL_Renderer *r)
+void drawer::draw_background(SDL_Renderer *r)
 {
 	SDL_Rect dest;
 	int x;
@@ -23,7 +23,7 @@ void draw_background(SDL_Renderer *r)
 	}
 }
 
-void draw_text(int x, int y, int r, int g, int b, SDL_Renderer *renderer, char *format, ...)
+void drawer::draw_text(int x, int y, int r, int g, int b, SDL_Renderer *renderer, char *format, ...)
 {
 	int i, len, c;
 	SDL_Rect rect;
@@ -48,14 +48,14 @@ void draw_text(int x, int y, int r, int g, int b, SDL_Renderer *renderer, char *
 
 		if (c >= ' ' && c <= 'Z') {
 			rect.x = (c - ' ') * GLYPH_WIDTH;
-			blit_rect(font_texture, &rect, x, y, renderer);
-			//blit_rect(d->texture, &d->rect, d->x, d->y, r);
+			drawer::blit_rect(font_texture, &rect, x, y, renderer);
+			//drawer::blit_rect(d->texture, &d->rect, d->x, d->y, r);
 			x += GLYPH_WIDTH;
 		}
 	}
 }
 
-void blit(SDL_Texture *texture, int x, int y, SDL_Renderer *r)
+void drawer::blit(SDL_Texture *texture, int x, int y, SDL_Renderer *r)
 {
 	SDL_Rect dest;
 	dest.x = x;
@@ -65,7 +65,7 @@ void blit(SDL_Texture *texture, int x, int y, SDL_Renderer *r)
 	SDL_RenderCopy(r, texture, NULL, &dest);
 }
 
-void blit_rect(SDL_Texture *texture, SDL_Rect *src, int x, int y, SDL_Renderer *r)
+void drawer::blit_rect(SDL_Texture *texture, SDL_Rect *src, int x, int y, SDL_Renderer *r)
 {
 	SDL_Rect dest;
 	
@@ -78,7 +78,7 @@ void blit_rect(SDL_Texture *texture, SDL_Rect *src, int x, int y, SDL_Renderer *
 }
 
 
-SDL_Texture *load_texture(char *filename, SDL_Renderer *r)
+SDL_Texture *drawer::load_texture(char *filename, SDL_Renderer *r)
 {
 	return IMG_LoadTexture(r, filename);
 }

@@ -43,7 +43,7 @@ stage *stage::init_stage(SDL_Renderer *r)
 	s->bullet_tail = &s->bullet_head;
 	s->score = 0;
 
-	init_draw(r);
+	drawer::init_draw(r);
 	
 	s->reset_stage();
 
@@ -426,21 +426,21 @@ void calc_slope(int x1, int y1, int x2, int y2, float *dx, float *dy)
 void stage::draw(SDL_Renderer *r)
 {
 	stage *s = this;
-	draw_background(r);
+	drawer::draw_background(r);
 	s->draw_starfield(r);
 
 	if(player != NULL)
-		blit(player->texture, player->x, player->y, r);
+		drawer::blit(player->texture, player->x, player->y, r);
 	
 	entity *b;
 	
 	for (b = s->bullet_head.next; b != NULL; b = b->next)
-		blit(b->texture, b->x, b->y, r);
+		drawer::blit(b->texture, b->x, b->y, r);
 
 	entity *e;
 	
 	for (e = s->fighter_head.next; e != NULL ; e = e->next)
-		blit(e->texture, e->x, e->y, r);
+		drawer::blit(e->texture, e->x, e->y, r);
 	
 	debris::draw_debris(r);
 	s->draw_explosions(r);
