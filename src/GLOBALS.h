@@ -4,6 +4,9 @@
 
 #include <SDL2/SDL.h>
 
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 720
+
 extern int background_x;
 extern SDL_Texture *player_texture;
 extern SDL_Texture *bullet_texture;

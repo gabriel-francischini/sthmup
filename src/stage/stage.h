@@ -7,8 +7,6 @@
 #include "debris.h"
 #include "star.h"
 
-#define MAX_STARS 500
-
 #define FPS 60
 #define SIDE_PLAYER 0
 
@@ -16,7 +14,6 @@ struct stage {
     entity fighter_head, *fighter_tail;
     entity bullet_head, *bullet_tail;
 
-    star stars[MAX_STARS];
     int score;
 
     static stage *init_stage(SDL_Renderer *renderer);
@@ -34,11 +31,8 @@ private:
     void do_fighters();
     void spawn_enemies();
     void reset_stage();
-    void init_starfield();
-    void do_starfield();
 
     // These were previously drawer.c methods
-    void draw_starfield(SDL_Renderer *r);
     void draw_hud(entity *player, SDL_Renderer *renderer);
 };
 

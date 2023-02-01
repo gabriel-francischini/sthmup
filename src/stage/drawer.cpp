@@ -22,21 +22,6 @@ void drawer::init_draw(SDL_Renderer *r)
 	font_texture = drawer::load_texture("gfx/font.png", r);
 }
 
-void stage::draw_starfield(SDL_Renderer *r)
-{
-	stage *s = this;
-	int i, c;
-
-	for (i = 0 ; i < MAX_STARS ; i++) {
-		c = 32 * s->stars[i].speed;
-
-		SDL_SetRenderDrawColor(r, c, c, c, 255);
-
-		SDL_RenderDrawLine(r, s->stars[i].x, s->stars[i].y, s->stars[i].x + 3, s->stars[i].y);
-	}
-}
-
-
 void stage::draw_hud(entity *player, SDL_Renderer *renderer)
 {
 	stage *s = this;

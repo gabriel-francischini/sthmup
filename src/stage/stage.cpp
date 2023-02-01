@@ -16,8 +16,6 @@
 #define PLAYER_BULLET_SPEED 16
 #define ALIEN_BULLET_SPEED 8
 #define SIDE_ALIEN 1
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
 
 static void clip_player();
 static int collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
@@ -88,7 +86,7 @@ void stage::reset_stage()
 	debris::debris_tail = &debris::debris_head;
 
 	s->init_player();
-	s->init_starfield();
+	star::init_starfield();
 
 	spawn_timer = 0;
 	reset_timer = FPS * 3;
@@ -106,22 +104,11 @@ void stage::init_player()
 	s->fighter_tail = player;
 }
 
-void stage::init_starfield()
-{
-	stage *s = this;
-	int i;
-	for(i = 0; i < MAX_STARS; i++) {
-		s->stars[i].x = rand() % SCREEN_WIDTH;
-		s->stars[i].y = rand() % SCREEN_HEIGHT;
-		s->stars[i].speed = 1 + rand() % 8;
-	}
-}
-
 void stage::do_logic(int *keyboard)
 {
 	stage *s = this;
 	do_background();
-	s->do_starfield();
+	star::do_starfield();
 	s->do_player(keyboard);
 	s->do_enemies();
 	s->do_fighters();
@@ -140,19 +127,6 @@ static void do_background()
 {
 	if(--background_x < -SCREEN_WIDTH)
 		background_x = 0;
-}
-
-void stage::do_starfield()
-{
-	stage *s = this;
-	int i;
-
-	for(i = 0; i < MAX_STARS; i++) {
-		s->stars[i].x -= s->stars[i].speed;
-
-		if(s->stars[i].x < 0)
-			s->stars[i].x += SCREEN_WIDTH;
-	}
 }
 
 void stage::do_player(int *keyboard)
@@ -365,7 +339,7 @@ void stage::draw(SDL_Renderer *r)
 {
 	stage *s = this;
 	drawer::draw_background(r);
-	s->draw_starfield(r);
+	star::draw_starfield(r);
 
 	if(player != NULL)
 		drawer::blit(player->texture, player->x, player->y, r);
