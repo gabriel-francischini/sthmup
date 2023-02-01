@@ -16,7 +16,6 @@ struct stage {
     entity fighter_head, *fighter_tail;
     entity bullet_head, *bullet_tail;
 
-    explosion explosion_head, *explosion_tail;
     star stars[MAX_STARS];
     int score;
 
@@ -25,7 +24,6 @@ struct stage {
     void extracted(SDL_Renderer *&r);
     void draw(SDL_Renderer *r);
 
-    void add_explosions(int x, int y, int num);
 private:
     void init_player();
     void fire_bullet();
@@ -38,10 +36,8 @@ private:
     void reset_stage();
     void init_starfield();
     void do_starfield();
-    void do_explosions();
 
     // These were previously drawer.c methods
-    void draw_explosions(SDL_Renderer *r);
     void draw_starfield(SDL_Renderer *r);
     void draw_hud(entity *player, SDL_Renderer *renderer);
 };

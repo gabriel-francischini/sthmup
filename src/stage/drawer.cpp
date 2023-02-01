@@ -9,7 +9,6 @@ SDL_Texture *bullet_texture;
 SDL_Texture *font_texture;
 SDL_Texture *enemy_texture;
 SDL_Texture *alien_bullet_texture;
-SDL_Texture *explosion_texture;
 SDL_Texture *background;
 
 void drawer::init_draw(SDL_Renderer *r)
@@ -19,28 +18,9 @@ void drawer::init_draw(SDL_Renderer *r)
 	alien_bullet_texture = drawer::load_texture("gfx/alienBullet.png", r);
 	player_texture = drawer::load_texture("gfx/player.png", r);
 	background = drawer::load_texture("gfx/background.png", r);
-	explosion_texture = drawer::load_texture("gfx/explosion.png", r);
+	explosion::explosion_texture = drawer::load_texture("gfx/explosion.png", r);
 	font_texture = drawer::load_texture("gfx/font.png", r);
 }
-
-void stage::draw_explosions(SDL_Renderer *r)
-{
-	stage *s = this;
-	explosion *ex;
-
-	SDL_SetRenderDrawBlendMode(r, SDL_BLENDMODE_ADD);
-	SDL_SetTextureBlendMode(explosion_texture, SDL_BLENDMODE_ADD);
-
-	for (ex = s->explosion_head.next ; ex != NULL ; ex = ex->next) {
-		SDL_SetTextureColorMod(explosion_texture, ex->r, ex->g, ex->b);
-		SDL_SetTextureAlphaMod(explosion_texture, ex->a);
-
-		drawer::blit(explosion_texture, ex->x, ex->y, r);
-	}
-
-	SDL_SetRenderDrawBlendMode(r, SDL_BLENDMODE_NONE);
-}
-
 
 void stage::draw_starfield(SDL_Renderer *r)
 {

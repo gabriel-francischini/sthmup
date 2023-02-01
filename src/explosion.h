@@ -1,7 +1,8 @@
 #ifndef __EXPLOSION__
 #define __EXPLOSION__
 
-typedef struct explosion explosion;
+#include <SDL2/SDL.h>
+
 
 struct explosion {
     float x;
@@ -10,6 +11,15 @@ struct explosion {
     float dy;
     int r, g, b, a;
     explosion *next;
+
+
+    static SDL_Texture *explosion_texture;
+    static explosion explosion_head, *explosion_tail;
+
+    static void add_explosions(int x, int y, int num);
+    static void do_explosions();
+    static void draw_explosions(SDL_Renderer *r);
 };
+
 
 #endif

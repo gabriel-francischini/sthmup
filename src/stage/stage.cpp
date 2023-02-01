@@ -69,9 +69,9 @@ void stage::reset_stage()
 		free(e);
 	}
 
-	while (s->explosion_head.next) {
-		ex = s->explosion_head.next;
-		s->explosion_head.next = ex->next;
+	while (explosion::explosion_head.next) {
+		ex = explosion::explosion_head.next;
+		explosion::explosion_head.next = ex->next;
 		free(ex);
 	}
 
@@ -84,7 +84,7 @@ void stage::reset_stage()
 	memset(s, 0, sizeof(stage));
 	s->fighter_tail = &s->fighter_head;
 	s->bullet_tail = &s->bullet_head;
-	s->explosion_tail = &s->explosion_head;
+	explosion::explosion_tail = &explosion::explosion_head;
 	debris::debris_tail = &debris::debris_head;
 
 	s->init_player();
@@ -128,7 +128,7 @@ void stage::do_logic(int *keyboard)
 	s->do_bullets();
 	s->spawn_enemies();
 	clip_player();
-	s->do_explosions();
+	explosion::do_explosions();
 	debris::do_debris();
 
 	if(player == NULL && --reset_timer <= 0)
@@ -152,68 +152,6 @@ void stage::do_starfield()
 
 		if(s->stars[i].x < 0)
 			s->stars[i].x += SCREEN_WIDTH;
-	}
-}
-
-void stage::do_explosions()
-{
-	stage *s = this;
-	explosion *e;
-	explosion *prev = &s->explosion_head;
-
-	for(e = s->explosion_head.next; e != NULL; e = e->next) {
-		e->x += e->dx;
-		e->y += e->dy;
-
-		if(--e->a <= 0) {
-			if(e == s->explosion_tail)
-				s->explosion_tail = prev;
-
-			prev->next = e->next;
-			free(e);
-			e = prev;
-		}
-		prev = e;
-	}
-}
-
-void stage::add_explosions(int x, int y, int num)
-{
-	stage *s = this;
-	explosion *ex;
-	int i;
-	for(i = 0; i < num; i++) {
-		ex = (explosion*) calloc(1, sizeof(explosion));
-		s->explosion_tail->next = ex;
-		s->explosion_tail = ex;
-
-		ex->x = x + (rand() % 32) - (rand() % 32);
-		ex->y = y + (rand() % 32) - (rand() % 32);
-		ex->dx = (rand() % 10) - (rand() % 10);
-		ex->dy = (rand() % 10) - (rand() % 10);
-		
-		ex->dx /= 10;
-		ex->dy /= 10;
-
-		switch (rand() % 4) {
-			case 0:
-				ex->r = 255;
-				break;
-			case 1:
-				ex->r = 255;
-				ex->g = 128;
-				break;
-			case 2:
-				ex->r = 255;
-				ex->g = 255;
-				break;
-			default:
-				ex->r = 255;
-				ex->g = 255;
-				ex->b = 255;
-				break;
-		}
-		ex->a = rand() % FPS * 3;
 	}
 }
 
@@ -394,7 +332,7 @@ static int bullet_hit_fighter(entity *b, stage *s)
 			e->health--;
 
 			if(e->health == 0) {
-				s->add_explosions(e->x, e->y, 32);
+				explosion::add_explosions(e->x, e->y, 32);
 				debris::add_debris(e);
 				if(e != player)
 					s->score++;
@@ -443,6 +381,6 @@ void stage::draw(SDL_Renderer *r)
 		drawer::blit(e->texture, e->x, e->y, r);
 	
 	debris::draw_debris(r);
-	s->draw_explosions(r);
+	explosion::draw_explosions(r);
 	s->draw_hud(player, r);
 }
