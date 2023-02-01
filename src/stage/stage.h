@@ -3,9 +3,9 @@
 
 #include <SDL2/SDL.h>
 #include "entity.h"
-#include "explosion.h"
-#include "debris.h"
-#include "star.h"
+#include "entity/explosion.h"
+#include "entity/debris.h"
+#include "entity/star.h"
 
 #define FPS 60
 #define PLAYER_SPEED 4

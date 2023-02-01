@@ -3,12 +3,12 @@
 
 #include "stage.h"
 #include "entity.h"
-#include "star.h"
-#include "explosion.h"
-#include "debris.h"
+#include "entity/star.h"
+#include "entity/explosion.h"
+#include "entity/debris.h"
 #include "drawer.h"
 #include "GLOBALS.h"
-#include "bullet.h"
+#include "entity/bullet.h"
 
 entity stage::fighter_head;
 entity *stage::fighter_tail = &stage::fighter_head;
