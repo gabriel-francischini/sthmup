@@ -131,3 +131,16 @@ void stage::draw(SDL_Renderer *r)
 	explosion::draw_explosions(r);
 	s->draw_hud(player::player_ptr, r);
 }
+
+
+void stage::draw_hud(entity *player, SDL_Renderer *renderer)
+{
+	stage *s = this;
+	drawer::draw_text(1080, 10, 255, 255, 255, renderer, "SCORE: %03d", s->score);
+	if(player != NULL) {
+		drawer::draw_text(1080, 50, 255, 255, 255, renderer, "HEALTH: %d", player->health);
+	} else {
+		drawer::draw_text(1080, 50, 255, 255, 255, renderer, "HEALTH: %d", 0);
+		drawer::draw_text(400, 400, 255, 255, 255, renderer, "YOU GOT DESTROYED!");
+	}
+}

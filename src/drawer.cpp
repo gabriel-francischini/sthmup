@@ -1,4 +1,5 @@
 #include "drawer.h"
+#include "entity/explosion.h"
 
 #define MAX_LINE_LENGTH 1024
 #define GLYPH_HEIGHT 28
@@ -7,6 +8,27 @@
 #define SCREEN_HEIGHT 720
 
 static char draw_text_buffer[MAX_LINE_LENGTH];
+
+/*
+	DEFINING TEXTURES FROM GLOBALS.H
+*/
+SDL_Texture *player_texture;
+SDL_Texture *bullet_texture;
+SDL_Texture *font_texture;
+SDL_Texture *enemy_texture;
+SDL_Texture *alien_bullet_texture;
+SDL_Texture *background;
+
+void drawer::init_draw(SDL_Renderer *r)
+{
+	bullet_texture = drawer::load_texture("gfx/playerBullet.png", r);
+	enemy_texture = drawer::load_texture("gfx/enemy.png", r);
+	alien_bullet_texture = drawer::load_texture("gfx/alienBullet.png", r);
+	player_texture = drawer::load_texture("gfx/player.png", r);
+	background = drawer::load_texture("gfx/background.png", r);
+	explosion::explosion_texture = drawer::load_texture("gfx/explosion.png", r);
+	font_texture = drawer::load_texture("gfx/font.png", r);
+}
 
 void drawer::draw_background(SDL_Renderer *r)
 {
@@ -81,4 +103,20 @@ void drawer::blit_rect(SDL_Texture *texture, SDL_Rect *src, int x, int y, SDL_Re
 SDL_Texture *drawer::load_texture(char *filename, SDL_Renderer *r)
 {
 	return IMG_LoadTexture(r, filename);
+}
+
+void drawer::calc_slope(int x1, int y1, int x2, int y2, float *dx, float *dy)
+{
+	int steps = MAX(abs(x1 - x2), abs(y1 - y2));
+
+	if (steps == 0) {
+		*dx = *dy = 0;
+		return;
+	}
+
+	*dx = (x1 - x2);
+	*dx /= steps;
+
+	*dy = (y1 - y2);
+	*dy /= steps;
 }
