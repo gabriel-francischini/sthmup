@@ -2,6 +2,7 @@
 #include "stage/stage.h"
 #include "GLOBALS.h"
 #include "drawer.h"
+#include "entity/enemy.h"
 
 entity bullet::bullet_head;
 entity *bullet::bullet_tail = &bullet::bullet_head;
@@ -78,7 +79,7 @@ int bullet_hit_fighter(entity *b)
 {
 	entity *e;
 
-	for(e = stage::fighter_head.next; e != NULL; e = e->next) {
+	for(e = enemy::fighter_head.next; e != NULL; e = e->next) {
 		if(e->side != b->side && collision(b->x, b->y, b->w, b->h, e->x, e->y, e->w, e->h)) {
 			b->health = 0;
 			e->health--;

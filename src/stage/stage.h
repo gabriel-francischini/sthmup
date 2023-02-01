@@ -16,7 +16,6 @@
 
 
 struct stage {
-    static entity fighter_head, *fighter_tail;
     static entity *player;
 
     static int score;
@@ -29,9 +28,6 @@ struct stage {
 private:
     void init_player();
     void do_player(int *keyboard);
-    void do_enemies();
-    void do_fighters();
-    void spawn_enemies();
     void reset_stage();
 
     // These were previously drawer.c methods

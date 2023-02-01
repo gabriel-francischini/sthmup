@@ -9,9 +9,7 @@
 #include "drawer.h"
 #include "GLOBALS.h"
 #include "entity/bullet.h"
-
-entity stage::fighter_head;
-entity *stage::fighter_tail = &stage::fighter_head;
+#include "entity/enemy.h"
 
 int stage::score;
 
@@ -21,9 +19,6 @@ static void do_background();
 
 entity *stage::player;
 
-static int spawn_timer;
-static int reset_timer;
-
 //DEFINING GLOBAL from GLOBALS.H
 int background_x;
 
@@ -32,7 +27,7 @@ int background_x;
 stage *stage::init_stage(SDL_Renderer *r)
 {
 	stage *s = (stage*) calloc(1, sizeof(stage));
-	s->fighter_tail = &s->fighter_head;
+	enemy::fighter_tail = &enemy::fighter_head;
 	bullet::bullet_tail = &bullet::bullet_head;
 	s->score = 0;
 
@@ -50,9 +45,9 @@ void stage::reset_stage()
 	explosion *ex;
 	debris *d;
 
-	while(s->fighter_head.next) {
-		e = s->fighter_head.next;
-		s->fighter_head.next = e->next;
+	while(enemy::fighter_head.next) {
+		e = enemy::fighter_head.next;
+		enemy::fighter_head.next = e->next;
 		free(e);
 	}
 
@@ -75,7 +70,7 @@ void stage::reset_stage()
 	}
 
 	memset(s, 0, sizeof(stage));
-	s->fighter_tail = &s->fighter_head;
+	enemy::fighter_tail = &enemy::fighter_head;
 	bullet::bullet_tail = &bullet::bullet_head;
 	explosion::explosion_tail = &explosion::explosion_head;
 	debris::debris_tail = &debris::debris_head;
@@ -83,20 +78,20 @@ void stage::reset_stage()
 	s->init_player();
 	star::init_starfield();
 
-	spawn_timer = 0;
-	reset_timer = FPS * 3;
+	enemy::spawn_timer = 0;
+	enemy::reset_timer = FPS * 3;
 	s->score = 0;
 }
 
 void stage::init_player()
 {
-	stage *s = this;
+	// stage *s = this;
 	player = entity::create_entity(100, 100, SIDE_PLAYER, player_texture);
 	player->dx = 0;
 	player->dy = 0;
 	player->health = 3;
-	s->fighter_tail->next = player;
-	s->fighter_tail = player;
+	enemy::fighter_tail->next = player;
+	enemy::fighter_tail = player;
 }
 
 void stage::do_logic(int *keyboard)
@@ -105,15 +100,15 @@ void stage::do_logic(int *keyboard)
 	do_background();
 	star::do_starfield();
 	s->do_player(keyboard);
-	s->do_enemies();
-	s->do_fighters();
+	enemy::do_enemies();
+	enemy::do_fighters();
 	bullet::do_bullets();
-	s->spawn_enemies();
+	enemy::spawn_enemies();
 	clip_player();
 	explosion::do_explosions();
 	debris::do_debris();
 
-	if(player == NULL && --reset_timer <= 0)
+	if(player == NULL && --enemy::reset_timer <= 0)
 		s->reset_stage();
 }
 
@@ -155,62 +150,6 @@ void stage::do_player(int *keyboard)
 	}
 }
 
-void stage::do_enemies()
-{
-	stage *s = this;
-	entity *e;
-	for(e = s->fighter_head.next; e != NULL; e = e->next) {
-		if(e != player && player != NULL && --e->reload <= 0)
-			bullet::fire_alien_bullet(e, player);
-	}
-}
-
-void stage::do_fighters()
-{
-	stage *s = this;
-	entity *e;
-	entity *prev = &s->fighter_head;
-
-	for (e = s->fighter_head.next; e != NULL ; e = e->next) {
-		
-		e->x += e->dx;
-		e->y += e->dy;
-		
-		if(e != player && e->x < -e->w)
-			e->health = 0;
-		
-		if(e->health == 0) {
-
-			if (e == player)
-				player = NULL;
-			
-			if(e == s->fighter_tail)
-				s->fighter_tail = prev;
-			
-			prev->next = e->next;
-			free(e);
-			e = prev;
-		}
-		prev = e;
-	}
-}
-
-void stage::spawn_enemies()
-{
-	stage *s = this;
-	entity *enemy;
-	
-	if (--spawn_timer <= 0) {
-		enemy = entity::create_entity(SCREEN_WIDTH, rand() % SCREEN_HEIGHT, SIDE_ALIEN, enemy_texture);
-		enemy->dx = -(2 + (rand() % 4));
-		enemy->reload = FPS * (1 + (rand() % 3));
-		spawn_timer = 30 + (rand() % FPS);
-		
-		s->fighter_tail->next = enemy;
-		s->fighter_tail = enemy;
-	}
-}
-
 static void clip_player()
 {
 	entity *p = stage::player;
@@ -245,7 +184,7 @@ void stage::draw(SDL_Renderer *r)
 
 	entity *e;
 	
-	for (e = s->fighter_head.next; e != NULL ; e = e->next)
+	for (e = enemy::fighter_head.next; e != NULL ; e = e->next)
 		drawer::blit(e->texture, e->x, e->y, r);
 	
 	debris::draw_debris(r);
