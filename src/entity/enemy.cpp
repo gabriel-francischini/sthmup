@@ -2,6 +2,7 @@
 #include "GLOBALS.h"
 #include "bullet.h"
 #include "stage/stage.h"
+#include "entity/player.h"
 
 entity enemy::fighter_head;
 entity *enemy::fighter_tail = &enemy::fighter_head;
@@ -15,8 +16,8 @@ void enemy::do_enemies()
 	// stage *s = this;
 	entity *e;
 	for(e = enemy::fighter_head.next; e != NULL; e = e->next) {
-		if(e != stage::player && stage::player != NULL && --e->reload <= 0)
-			bullet::fire_alien_bullet(e, stage::player);
+		if(e != player::player_ptr && player::player_ptr != NULL && --e->reload <= 0)
+			bullet::fire_alien_bullet(e, player::player_ptr);
 	}
 }
 
@@ -31,13 +32,13 @@ void enemy::do_fighters()
 		e->x += e->dx;
 		e->y += e->dy;
 
-		if(e != stage::player && e->x < -e->w)
+		if(e != player::player_ptr && e->x < -e->w)
 			e->health = 0;
 
 		if(e->health == 0) {
 
-			if (e == stage::player)
-				stage::player = NULL;
+			if (e == player::player_ptr)
+				player::player_ptr = NULL;
 
 			if(e == enemy::fighter_tail)
 				enemy::fighter_tail = prev;

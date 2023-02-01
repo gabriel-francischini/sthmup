@@ -10,14 +10,14 @@
 #include "GLOBALS.h"
 #include "entity/bullet.h"
 #include "entity/enemy.h"
+#include "entity/player.h"
 
 int stage::score;
 
-static void clip_player();
 static void do_background();
 
 
-entity *stage::player;
+entity *player::player_ptr;
 
 //DEFINING GLOBAL from GLOBALS.H
 int background_x;
@@ -75,7 +75,7 @@ void stage::reset_stage()
 	explosion::explosion_tail = &explosion::explosion_head;
 	debris::debris_tail = &debris::debris_head;
 
-	s->init_player();
+	player::init_player();
 	star::init_starfield();
 
 	enemy::spawn_timer = 0;
@@ -83,32 +83,21 @@ void stage::reset_stage()
 	s->score = 0;
 }
 
-void stage::init_player()
-{
-	// stage *s = this;
-	player = entity::create_entity(100, 100, SIDE_PLAYER, player_texture);
-	player->dx = 0;
-	player->dy = 0;
-	player->health = 3;
-	enemy::fighter_tail->next = player;
-	enemy::fighter_tail = player;
-}
-
 void stage::do_logic(int *keyboard)
 {
 	stage *s = this;
 	do_background();
 	star::do_starfield();
-	s->do_player(keyboard);
+	player::do_player(keyboard);
 	enemy::do_enemies();
 	enemy::do_fighters();
 	bullet::do_bullets();
 	enemy::spawn_enemies();
-	clip_player();
+	player::clip_player();
 	explosion::do_explosions();
 	debris::do_debris();
 
-	if(player == NULL && --enemy::reset_timer <= 0)
+	if(player::player_ptr == NULL && --enemy::reset_timer <= 0)
 		s->reset_stage();
 }
 
@@ -119,63 +108,14 @@ static void do_background()
 		background_x = 0;
 }
 
-void stage::do_player(int *keyboard)
-{
-	// stage *s = this;
-	if(player != NULL) {
-	
-		player->dx = 0;
-		player->dy = 0;
-		
-		if (player->reload > 0)
-			player->reload--;
-		
-		if (keyboard[SDL_SCANCODE_UP])
-			player->dy = -PLAYER_SPEED;
-		
-		if (keyboard[SDL_SCANCODE_DOWN])
-			player->dy = PLAYER_SPEED;
-		
-		if (keyboard[SDL_SCANCODE_LEFT])
-			player->dx = -PLAYER_SPEED;
-		
-		if (keyboard[SDL_SCANCODE_RIGHT])
-			player->dx = PLAYER_SPEED;
-		
-		if (keyboard[SDL_SCANCODE_RCTRL] && player->reload <= 0)
-			bullet::fire_bullet(player);
-		
-		player->x += player->dx;
-		player->y += player->dy;
-	}
-}
-
-static void clip_player()
-{
-	entity *p = stage::player;
-	if(p != NULL) {
-		if(p->x < 0)
-			p->x = 0;
-
-		if(p->y < 0)
-			p->y = 0;
-
-		if(p->x > SCREEN_WIDTH / 2)
-			p->x = SCREEN_WIDTH / 2;
-
-		if(p->y > SCREEN_HEIGHT - p->h)
-			p->y = SCREEN_HEIGHT - p->h;
-	}
-}
-
 void stage::draw(SDL_Renderer *r)
 {
 	stage *s = this;
 	drawer::draw_background(r);
 	star::draw_starfield(r);
 
-	if(player != NULL)
-		drawer::blit(player->texture, player->x, player->y, r);
+	if(player::player_ptr != NULL)
+		drawer::blit(player::player_ptr->texture, player::player_ptr->x, player::player_ptr->y, r);
 	
 	entity *b;
 	
@@ -189,5 +129,5 @@ void stage::draw(SDL_Renderer *r)
 	
 	debris::draw_debris(r);
 	explosion::draw_explosions(r);
-	s->draw_hud(player, r);
+	s->draw_hud(player::player_ptr, r);
 }

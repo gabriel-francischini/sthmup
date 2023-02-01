@@ -3,6 +3,7 @@
 #include "GLOBALS.h"
 #include "drawer.h"
 #include "entity/enemy.h"
+#include "entity/player.h"
 
 entity bullet::bullet_head;
 entity *bullet::bullet_tail = &bullet::bullet_head;
@@ -87,7 +88,7 @@ int bullet_hit_fighter(entity *b)
 			if(e->health == 0) {
 				explosion::add_explosions(e->x, e->y, 32);
 				debris::add_debris(e);
-				if(e != stage::player)
+				if(e != player::player_ptr)
 					stage::score++;
 			}
 

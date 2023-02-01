@@ -16,21 +16,14 @@
 
 
 struct stage {
-    static entity *player;
-
     static int score;
 
     static stage *init_stage(SDL_Renderer *renderer);
     void do_logic(int *keyboard);
-    void extracted(SDL_Renderer *&r);
     void draw(SDL_Renderer *r);
 
 private:
-    void init_player();
-    void do_player(int *keyboard);
     void reset_stage();
-
-    // These were previously drawer.c methods
     void draw_hud(entity *player, SDL_Renderer *renderer);
 };
 
