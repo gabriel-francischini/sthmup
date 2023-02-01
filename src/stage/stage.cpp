@@ -8,23 +8,18 @@
 #include "debris.h"
 #include "drawer.h"
 #include "GLOBALS.h"
+#include "bullet.h"
 
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#define MAX(a,b) (((a)>(b))?(a):(b))
+entity stage::fighter_head;
+entity *stage::fighter_tail = &stage::fighter_head;
 
-#define PLAYER_SPEED 4
-#define PLAYER_BULLET_SPEED 16
-#define ALIEN_BULLET_SPEED 8
-#define SIDE_ALIEN 1
+int stage::score;
 
 static void clip_player();
-static int collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
-static int bullet_hit_fighter(entity *b, stage *s);
-static void calc_slope(int x1, int y1, int x2, int y2, float *dx, float *dy);
 static void do_background();
 
 
-static entity *player;
+entity *stage::player;
 
 static int spawn_timer;
 static int reset_timer;
@@ -38,7 +33,7 @@ stage *stage::init_stage(SDL_Renderer *r)
 {
 	stage *s = (stage*) calloc(1, sizeof(stage));
 	s->fighter_tail = &s->fighter_head;
-	s->bullet_tail = &s->bullet_head;
+	bullet::bullet_tail = &bullet::bullet_head;
 	s->score = 0;
 
 	drawer::init_draw(r);
@@ -61,9 +56,9 @@ void stage::reset_stage()
 		free(e);
 	}
 
-	while (s->bullet_head.next) {
-		e = s->bullet_head.next;
-		s->bullet_head.next = e->next;
+	while (bullet::bullet_head.next) {
+		e = bullet::bullet_head.next;
+		bullet::bullet_head.next = e->next;
 		free(e);
 	}
 
@@ -81,7 +76,7 @@ void stage::reset_stage()
 
 	memset(s, 0, sizeof(stage));
 	s->fighter_tail = &s->fighter_head;
-	s->bullet_tail = &s->bullet_head;
+	bullet::bullet_tail = &bullet::bullet_head;
 	explosion::explosion_tail = &explosion::explosion_head;
 	debris::debris_tail = &debris::debris_head;
 
@@ -112,7 +107,7 @@ void stage::do_logic(int *keyboard)
 	s->do_player(keyboard);
 	s->do_enemies();
 	s->do_fighters();
-	s->do_bullets();
+	bullet::do_bullets();
 	s->spawn_enemies();
 	clip_player();
 	explosion::do_explosions();
@@ -131,7 +126,7 @@ static void do_background()
 
 void stage::do_player(int *keyboard)
 {
-	stage *s = this;
+	// stage *s = this;
 	if(player != NULL) {
 	
 		player->dx = 0;
@@ -153,26 +148,11 @@ void stage::do_player(int *keyboard)
 			player->dx = PLAYER_SPEED;
 		
 		if (keyboard[SDL_SCANCODE_RCTRL] && player->reload <= 0)
-			s->fire_bullet();
+			bullet::fire_bullet(player);
 		
 		player->x += player->dx;
 		player->y += player->dy;
 	}
-}
-
-void stage::fire_bullet()
-{
-	stage *s = this;
-	entity *bullet = entity::create_entity(player->x, player->y, SIDE_PLAYER, bullet_texture);
-	
-	s->bullet_tail->next = bullet;
-	s->bullet_tail = bullet;
-	
-	bullet->dx = PLAYER_BULLET_SPEED;
-	
-	bullet->y += (player->h / 2) - (bullet->h / 2);
-	
-	player->reload = 8;
 }
 
 void stage::do_enemies()
@@ -181,28 +161,8 @@ void stage::do_enemies()
 	entity *e;
 	for(e = s->fighter_head.next; e != NULL; e = e->next) {
 		if(e != player && player != NULL && --e->reload <= 0)
-			s->fire_alien_bullet(e);
+			bullet::fire_alien_bullet(e, player);
 	}
-}
-
-void stage::fire_alien_bullet(entity *e)
-{
-	stage *s = this;
-	entity *bullet = entity::create_entity(e->x, e->y, e->side, alien_bullet_texture);
-	s->bullet_tail->next = bullet;
-	s->bullet_tail = bullet;
-
-	bullet->x += (e->w / 2) - (bullet->w / 2);
-	bullet->y += (e->h / 2) - (bullet->h / 2);
-
-	calc_slope(player->x + (player->w / 2), player->y + (player->h / 2), e->x, e->y, &bullet->dx, &bullet->dy);
-
-	bullet->dx *= ALIEN_BULLET_SPEED;
-	bullet->dy *= ALIEN_BULLET_SPEED;
-
-	bullet->side = SIDE_ALIEN;
-
-	e->reload = (rand() % FPS * 2);
 }
 
 void stage::do_fighters()
@@ -253,7 +213,7 @@ void stage::spawn_enemies()
 
 static void clip_player()
 {
-	entity *p = player;
+	entity *p = stage::player;
 	if(p != NULL) {
 		if(p->x < 0)
 			p->x = 0;
@@ -269,72 +229,6 @@ static void clip_player()
 	}
 }
 
-void stage::do_bullets()
-{
-	stage *s = this;
-	entity *b;
-	entity *prev = &s->bullet_head;
-		
-	for (b = s->bullet_head.next; b != NULL; b = b->next) {
-		b->x += b->dx;
-		b->y += b->dy;
-		
-		if (bullet_hit_fighter(b, s) || b->x < -b->w || b->y < -b->h || b->x > SCREEN_WIDTH || b->y > SCREEN_HEIGHT) {
-			if (b == s->bullet_tail)
-				s->bullet_tail = prev;
-			
-			prev->next = b->next;
-			free(b);
-			b = prev;
-		}
-		prev = b;
-	}
-}
-
-static int collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
-{
-	return (MAX(x1, x2) < MIN(x1 + w1, x2 + w2)) && (MAX(y1, y2) < MIN(y1 + h1, y2 + h2));
-}
-
-static int bullet_hit_fighter(entity *b, stage *s)
-{
-	entity *e;
-
-	for(e = s->fighter_head.next; e != NULL; e = e->next) {
-		if(e->side != b->side && collision(b->x, b->y, b->w, b->h, e->x, e->y, e->w, e->h)) {
-			b->health = 0;
-			e->health--;
-
-			if(e->health == 0) {
-				explosion::add_explosions(e->x, e->y, 32);
-				debris::add_debris(e);
-				if(e != player)
-					s->score++;
-			}
-			
-			return 1;
-
-		}
-	}
-	return 0;
-}
-
-void calc_slope(int x1, int y1, int x2, int y2, float *dx, float *dy)
-{
-	int steps = MAX(abs(x1 - x2), abs(y1 - y2));
-
-	if (steps == 0) {
-		*dx = *dy = 0;
-		return;
-	}
-
-	*dx = (x1 - x2);
-	*dx /= steps;
-
-	*dy = (y1 - y2);
-	*dy /= steps;
-}
-
 void stage::draw(SDL_Renderer *r)
 {
 	stage *s = this;
@@ -346,7 +240,7 @@ void stage::draw(SDL_Renderer *r)
 	
 	entity *b;
 	
-	for (b = s->bullet_head.next; b != NULL; b = b->next)
+	for (b = bullet::bullet_head.next; b != NULL; b = b->next)
 		drawer::blit(b->texture, b->x, b->y, r);
 
 	entity *e;

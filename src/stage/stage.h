@@ -8,13 +8,18 @@
 #include "star.h"
 
 #define FPS 60
+#define PLAYER_SPEED 4
 #define SIDE_PLAYER 0
+#define SIDE_ALIEN 1
+#define PLAYER_BULLET_SPEED 16
+#define ALIEN_BULLET_SPEED 8
+
 
 struct stage {
-    entity fighter_head, *fighter_tail;
-    entity bullet_head, *bullet_tail;
+    static entity fighter_head, *fighter_tail;
+    static entity *player;
 
-    int score;
+    static int score;
 
     static stage *init_stage(SDL_Renderer *renderer);
     void do_logic(int *keyboard);
@@ -23,10 +28,7 @@ struct stage {
 
 private:
     void init_player();
-    void fire_bullet();
-    void fire_alien_bullet(entity *e);
     void do_player(int *keyboard);
-    void do_bullets();
     void do_enemies();
     void do_fighters();
     void spawn_enemies();
